@@ -2977,8 +2977,6 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyWorkshareLoop(
     bool HasSimdModifier, bool HasMonotonicModifier,
     bool HasNonmonotonicModifier, bool HasOrderedClause,
     WorksharingLoopType LoopType) {
-  if (Config.isTargetDevice())
-    return applyWorkshareLoopTarget(DL, CLI, AllocaIP, LoopType);
   OMPScheduleType EffectiveScheduleType = computeOpenMPScheduleType(
       SchedKind, ChunkSize, HasSimdModifier, HasMonotonicModifier,
       HasNonmonotonicModifier, HasOrderedClause);
@@ -2992,14 +2990,20 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyWorkshareLoop(
       return applyDynamicWorkshareLoop(DL, CLI, AllocaIP, EffectiveScheduleType,
                                        NeedsBarrier, ChunkSize);
     // FIXME: Monotonicity ignored?
-    return applyStaticWorkshareLoop(DL, CLI, AllocaIP, NeedsBarrier);
+    if (Config.isTargetDevice())
+      return applyWorkshareLoopTarget(DL, CLI, AllocaIP, LoopType);
+    else
+      return applyStaticWorkshareLoop(DL, CLI, AllocaIP, NeedsBarrier);
 
   case OMPScheduleType::BaseStaticChunked:
     if (IsOrdered)
       return applyDynamicWorkshareLoop(DL, CLI, AllocaIP, EffectiveScheduleType,
                                        NeedsBarrier, ChunkSize);
     // FIXME: Monotonicity ignored?
-    return applyStaticChunkedWorkshareLoop(DL, CLI, AllocaIP, NeedsBarrier,
+    if (Config.isTargetDevice())
+      return applyWorkshareLoopTarget(DL, CLI, AllocaIP, LoopType);
+    else
+      return applyStaticChunkedWorkshareLoop(DL, CLI, AllocaIP, NeedsBarrier,
                                            ChunkSize);
 
   case OMPScheduleType::BaseRuntime:
@@ -3100,11 +3104,35 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
   // Allocate space for computed loop bounds as expected by the "init" function.
   Builder.restoreIP(AllocaIP);
   Type *I32Type = Type::getInt32Ty(M.getContext());
-  Value *PLastIter = Builder.CreateAlloca(I32Type, nullptr, "p.lastiter");
-  Value *PLowerBound = Builder.CreateAlloca(IVTy, nullptr, "p.lowerbound");
-  Value *PUpperBound = Builder.CreateAlloca(IVTy, nullptr, "p.upperbound");
-  Value *PStride = Builder.CreateAlloca(IVTy, nullptr, "p.stride");
-
+  Instruction *PLastIter = nullptr;
+  Instruction *PLowerBound = nullptr;
+  Instruction *PUpperBound = nullptr;
+  Instruction *PStride = nullptr;
+  Instruction *PLastIterAlloca = Builder.CreateAlloca(I32Type, nullptr, "p.lastiter");
+  Instruction *PLowerBoundAlloca = Builder.CreateAlloca(IVTy, nullptr, "p.lowerbound");
+  Instruction *PUpperBoundAlloca = Builder.CreateAlloca(IVTy, nullptr, "p.upperbound");
+  Instruction *PStrideAlloca = Builder.CreateAlloca(IVTy, nullptr, "p.stride");
+  if (Config.isTargetDevice() && M.getDataLayout().getAllocaAddrSpace() != 0) {
+    // Add additional casts to enforce pointers in zero address space
+    PLastIter = new AddrSpaceCastInst(
+        PLastIterAlloca, PointerType ::get(M.getContext(), 0), "p.lastiter.ascast");
+    PLastIter->insertAfter(PLastIterAlloca);
+    PLowerBound = new AddrSpaceCastInst(
+        PLowerBoundAlloca, PointerType ::get(M.getContext(), 0), "p.lowerbound.ascast");
+    PLowerBound->insertAfter(PLowerBoundAlloca);
+    PUpperBound = new AddrSpaceCastInst(
+        PUpperBoundAlloca, PointerType ::get(M.getContext(), 0), "p.upperbound.ascast");
+    PUpperBound->insertAfter(PUpperBoundAlloca);
+    PStride = new AddrSpaceCastInst(
+        PStrideAlloca, PointerType ::get(M.getContext(), 0), "p.stride.ascast");
+    PStride->insertAfter(PStrideAlloca);
+  }
+  else {
+     PLastIter = PLastIterAlloca;
+     PLowerBound = PLowerBoundAlloca;
+     PUpperBound = PLowerBoundAlloca;
+     PStride = PStrideAlloca;
+  }
   // At the end of the preheader, prepare for calling the "init" function by
   // storing the current loop bounds into the allocated space. A canonical loop
   // always iterates from 0 to trip-count with step 1. Note that "init" expects
