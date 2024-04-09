@@ -69,73 +69,73 @@
 ! Test -fopenmp with offload for RTL Flag Options
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a \
-! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
+! RUN: -fopenmp-targets=amdgcn-amd-amdhsa -nogpulib \
 ! RUN: -fopenmp-assume-threads-oversubscription \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-THREADS-OVS
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
-! RUN: -fopenmp-assume-threads-oversubscription \
+! RUN: -fopenmp-assume-threads-oversubscription -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-THREADS-OVS
 ! CHECK-THREADS-OVS: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" {{.*}} "-fopenmp-is-target-device" "-fopenmp-assume-threads-oversubscription" {{.*}}.f90"
 
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a \
 ! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
-! RUN: -fopenmp-assume-teams-oversubscription  \
+! RUN: -fopenmp-assume-teams-oversubscription  -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-TEAMS-OVS
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
-! RUN: -fopenmp-assume-teams-oversubscription  \
+! RUN: -fopenmp-assume-teams-oversubscription  -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-TEAMS-OVS
 ! CHECK-TEAMS-OVS: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" {{.*}} "-fopenmp-is-target-device" "-fopenmp-assume-teams-oversubscription" {{.*}}.f90"
 
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a \
 ! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
-! RUN: -fopenmp-assume-no-nested-parallelism  \
+! RUN: -fopenmp-assume-no-nested-parallelism  -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-NEST-PAR
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
-! RUN: -fopenmp-assume-no-nested-parallelism  \
+! RUN: -fopenmp-assume-no-nested-parallelism  -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-NEST-PAR
 ! CHECK-NEST-PAR: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" {{.*}} "-fopenmp-is-target-device" "-fopenmp-assume-no-nested-parallelism" {{.*}}.f90"
 
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a \
 ! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
-! RUN: -fopenmp-assume-no-thread-state \
+! RUN: -fopenmp-assume-no-thread-state -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-THREAD-STATE
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
-! RUN: -fopenmp-assume-no-thread-state \
+! RUN: -fopenmp-assume-no-thread-state -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-THREAD-STATE
 ! CHECK-THREAD-STATE: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" {{.*}} "-fopenmp-is-target-device" "-fopenmp-assume-no-thread-state" {{.*}}.f90"
 
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a \
 ! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
-! RUN: -fopenmp-target-debug \
+! RUN: -fopenmp-target-debug -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-TARGET-DEBUG
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
-! RUN: -fopenmp-target-debug \
+! RUN: -fopenmp-target-debug -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-TARGET-DEBUG
 ! CHECK-TARGET-DEBUG: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" {{.*}} "-fopenmp-is-target-device" "-fopenmp-target-debug" {{.*}}.f90"
 
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a \
 ! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
-! RUN: -fopenmp-target-debug \
+! RUN: -fopenmp-target-debug  -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-TARGET-DEBUG
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
-! RUN: -fopenmp-target-debug \
+! RUN: -fopenmp-target-debug -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-TARGET-DEBUG
 ! CHECK-TARGET-DEBUG-EQ: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" {{.*}} "-fopenmp-is-target-device" "-fopenmp-target-debug=111" {{.*}}.f90"
 
@@ -144,14 +144,14 @@
 ! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
 ! RUN: -fopenmp-target-debug -fopenmp-assume-threads-oversubscription \
 ! RUN: -fopenmp-assume-teams-oversubscription -fopenmp-assume-no-nested-parallelism \
-! RUN: -fopenmp-assume-no-thread-state \
+! RUN: -fopenmp-assume-no-thread-state -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-RTL-ALL
 ! RUN: %flang -S -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
 ! RUN: -fopenmp-target-debug -fopenmp-assume-threads-oversubscription \
 ! RUN: -fopenmp-assume-teams-oversubscription -fopenmp-assume-no-nested-parallelism \
-! RUN: -fopenmp-assume-no-thread-state \
+! RUN: -fopenmp-assume-no-thread-state -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-RTL-ALL
 ! CHECK-RTL-ALL: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" {{.*}} "-fopenmp-is-target-device" "-fopenmp-target-debug" "-fopenmp-assume-teams-oversubscription"
 ! CHECK-RTL-ALL: "-fopenmp-assume-threads-oversubscription" "-fopenmp-assume-no-thread-state" "-fopenmp-assume-no-nested-parallelism"
@@ -160,18 +160,18 @@
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a \
 ! RUN: -fopenmp-targets=amdgcn-amd-amdhsa \
-! RUN: -fopenmp-version=45 \
+! RUN: -fopenmp-version=45 -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-OPENMP-VERSION
 ! RUN: %flang -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=sm_70 \
 ! RUN: -fopenmp-targets=nvptx64-nvidia-cuda \
-! RUN: -fopenmp-version=45 \
+! RUN: -fopenmp-version=45 -nogpulib \
 ! RUN: | FileCheck %s --check-prefixes=CHECK-OPENMP-VERSION
 ! CHECK-OPENMP-VERSION: "{{[^"]*}}flang-new" "-fc1" {{.*}} "-fopenmp" "-fopenmp-version=45" {{.*}}.f90"
 
 ! Test diagnostic error when host IR file is non-existent 
 ! RUN: not %flang_fc1 %s -o %t 2>&1 -fopenmp -fopenmp-is-target-device \
-! RUN: -fopenmp-host-ir-file-path non-existant-file.bc \
+! RUN: -fopenmp-host-ir-file-path non-existant-file.bc -nogpulib \
 ! RUN: | FileCheck %s --check-prefix=HOST-IR-MISSING
 ! HOST-IR-MISSING: error: provided host compiler IR file 'non-existant-file.bc' is required to generate code for OpenMP target regions but cannot be found
 

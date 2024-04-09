@@ -132,6 +132,7 @@
 ! HELP-NEXT: -print-target-triple    Print the normalized target triple
 ! HELP-NEXT: -pthread                Support POSIX threads in generated code
 ! HELP-NEXT: -P                      Disable linemarker output in -E mode
+! HELP-NEXT:  --rocm-path=<value> ROCm installation path, used for finding and automatically linking required bitcode libraries.
 ! HELP-NEXT: -Rpass-analysis=<value> Report transformation analysis from optimization passes whose name matches the given POSIX regular expression
 ! HELP-NEXT: -Rpass-missed=<value>   Report missed transformations by optimization passes whose name matches the given POSIX regular expression
 ! HELP-NEXT: -Rpass=<value>          Report transformations performed by optimization passes whose name matches the given POSIX regular expression
@@ -168,6 +169,11 @@
 ! HELP-FC1-NEXT: -fbackslash             Specify that backslash in string introduces an escape character
 ! HELP-FC1-NEXT: -fcolor-diagnostics     Enable colors in diagnostics
 ! HELP-FC1-NEXT: -fconvert=<value>       Set endian conversion of data for unformatted files
+! HELP-FC1-NEXT: -fcuda-allow-variadic-functions
+! HELP-FC1-NEXT:                         Allow variadic functions in CUDA device code.
+! HELP-FC1-NEXT: -fcuda-include-gpubinary <value>
+! HELP-FC1-NEXT:                         Incorporate CUDA device-side binary into host object file.
+! HELP-FC1-NEXT: -fcuda-is-device        Generate code for CUDA device
 ! HELP-FC1-NEXT: -fdebug-dump-all        Dump symbols and the parse tree after the semantic checks
 ! HELP-FC1-NEXT: -fdebug-dump-parse-tree-no-sema
 ! HELP-FC1-NEXT:                         Dump the parse tree (skips the semantic checks)
@@ -211,6 +217,8 @@
 ! HELP-FC1-NEXT: -fno-analyzed-objects-for-unparse
 ! HELP-FC1-NEXT:                         Do not use the analyzed objects when unparsing
 ! HELP-FC1-NEXT: -fno-automatic          Implies the SAVE attribute for non-automatic local objects in subprograms unless RECURSIVE
+! HELP-FC1-NEXT: -fno-cuda-host-device-constexpr
+! HELP-FC1-NEXT:                         Don't treat unattributed constexpr functions as __host__ __device__.
 ! HELP-FC1-NEXT: -fno-debug-pass-manager Disables debug printing for the new pass manager
 ! HELP-FC1-NEXT: -fno-ppc-native-vector-element-order
 ! HELP-FC1-NEXT:                         Specifies PowerPC non-native vector element order
@@ -249,6 +257,8 @@
 ! HELP-FC1-NEXT: -menable-no-infs        Allow optimization to assume there are no infinities.
 ! HELP-FC1-NEXT: -menable-no-nans        Allow optimization to assume there are no NaNs.
 ! HELP-FC1-NEXT: -mframe-pointer=<value> Specify which frame pointers to retain.
+! HELP-FC1-NEXT: -mlink-builtin-bitcode <value>
+! HELP-FC1-NEXT:                         Link and internalize needed symbols from the given bitcode file before performing optimizations.
 ! HELP-FC1-NEXT: -mllvm <value>          Additional arguments to forward to LLVM's option processing
 ! HELP-FC1-NEXT: -mmlir <value>          Additional arguments to forward to MLIR's option processing
 ! HELP-FC1-NEXT: -module-dir <dir>       Put MODULE files in <dir>

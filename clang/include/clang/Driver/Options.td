@@ -1340,7 +1340,8 @@ def hip_link : Flag<["--"], "hip-link">, Group<opencl_Group>,
   HelpText<"Link clang-offload-bundler bundles for HIP">;
 def no_hip_rt: Flag<["-"], "no-hip-rt">, Group<hip_Group>,
   HelpText<"Do not link against HIP runtime libraries">;
-def rocm_path_EQ : Joined<["--"], "rocm-path=">, Group<hip_Group>,
+def rocm_path_EQ : Joined<["--"], "rocm-path=">,
+  Visibility<[FlangOption]>, Group<hip_Group>,
   HelpText<"ROCm installation path, used for finding and automatically linking required bitcode libraries.">;
 def hip_path_EQ : Joined<["--"], "hip-path=">, Group<hip_Group>,
   HelpText<"HIP runtime installation path, used for finding HIP version and adding HIP include path.">;
@@ -6924,6 +6925,10 @@ def as_secure_log_file : Separate<["-"], "as-secure-log-file">,
 
 } // let Visibility = [CC1Option, CC1AsOption]
 
+def mlink_builtin_bitcode : Separate<["-"], "mlink-builtin-bitcode">,
+  Visibility<[CC1Option, FC1Option]>,
+  HelpText<"Link and internalize needed symbols from the given bitcode file "
+           "before performing optimizations.">;
 let Visibility = [CC1Option] in {
 
 def llvm_verify_each : Flag<["-"], "llvm-verify-each">,
@@ -7026,9 +7031,6 @@ defm constructor_aliases : BoolMOption<"constructor-aliases",
           " emitting complete constructors and destructors as aliases when possible">>;
 def mlink_bitcode_file : Separate<["-"], "mlink-bitcode-file">,
   HelpText<"Link the given bitcode file before performing optimizations.">;
-def mlink_builtin_bitcode : Separate<["-"], "mlink-builtin-bitcode">,
-  HelpText<"Link and internalize needed symbols from the given bitcode file "
-           "before performing optimizations.">;
 def vectorize_loops : Flag<["-"], "vectorize-loops">,
   HelpText<"Run the Loop vectorization passes">,
   MarshallingInfoFlag<CodeGenOpts<"VectorizeLoop">>;
@@ -7884,7 +7886,7 @@ def source_date_epoch : Separate<["-"], "source-date-epoch">,
 // CUDA Options
 //===----------------------------------------------------------------------===//
 
-let Visibility = [CC1Option] in {
+let Visibility = [CC1Option, FC1Option] in {
 
 def fcuda_is_device : Flag<["-"], "fcuda-is-device">,
   HelpText<"Generate code for CUDA device">,
@@ -7899,7 +7901,7 @@ def fno_cuda_host_device_constexpr : Flag<["-"], "fno-cuda-host-device-constexpr
   HelpText<"Don't treat unattributed constexpr functions as __host__ __device__.">,
   MarshallingInfoNegativeFlag<LangOpts<"CUDAHostDeviceConstexpr">>;
 
-} // let Visibility = [CC1Option]
+} // let Visibility = [CC1Option, FC1Option]
 
 //===----------------------------------------------------------------------===//
 // OpenMP Options

@@ -425,6 +425,9 @@ void Flang::addTargetOptions(const ArgList &Args,
 void Flang::addOffloadOptions(Compilation &C, const InputInfoList &Inputs,
                               const JobAction &JA, const ArgList &Args,
                               ArgStringList &CmdArgs) const {
+  const auto &TC = getToolChain();
+  TC.addClangTargetOptions(Args, CmdArgs, JA.getOffloadingDeviceKind());  // Offloading related options
+
   bool IsOpenMPDevice = JA.isDeviceOffloading(Action::OFK_OpenMP);
   bool IsHostOffloadingAction = JA.isHostOffloading(Action::OFK_OpenMP) ||
                                 JA.isHostOffloading(C.getActiveOffloadKinds());
